@@ -2,8 +2,8 @@ module.exports = {
   apps: [
     {
       name: "Backend",
-      script: "server.js",
-      cwd: "D:/FlyerTrack/backend", // Adapte le chemin si nécessaire sur ton VPS (ex: "/root/backend")
+      script: "server.js", // ou le fichier principal de ton backend
+      cwd: "/home/renderuser/app", // assure-toi que c'est le bon chemin sur Render
       env: {
         NODE_ENV: "production",
         PORT: "5000",
