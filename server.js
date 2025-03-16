@@ -1,8 +1,6 @@
-// index.js ou app.js
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const authRoutes = require("./routes/auth");
 
 const app = express();
 
@@ -10,18 +8,19 @@ const app = express();
 app.use(express.json());
 
 // Connexion à MongoDB
+const MONGO_URI = process.env.MONGO_URI;
 mongoose
-  .connect(process.env.MONGO_URI, {
+  .connect(MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 30000, // Timeout de 30 secondes
   })
   .then(() => console.log("MongoDB connecté"))
   .catch((err) => console.error("Erreur MongoDB:", err));
 
-// Routes d'authentification
-app.use("/api/auth", authRoutes);
+// Définir tes routes, par exemple :
+app.use("/api/auth", require("./routes/auth"));
 
-// Démarrage du serveur
+// Démarrer le serveur
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Serveur démarré sur le port ${PORT}`));
-console.log("Chemin courant est :", process.cwd());
