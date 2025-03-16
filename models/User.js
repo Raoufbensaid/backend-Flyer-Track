@@ -25,7 +25,7 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Avant de sauvegarder, hacher le mot de passe si modifié
+// Avant de sauvegarder, hacher le mot de passe si il a été modifié
 UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   try {
@@ -37,7 +37,7 @@ UserSchema.pre("save", async function (next) {
   }
 });
 
-// Méthode pour comparer un mot de passe donné avec le haché
+// Méthode pour comparer le mot de passe donné avec le haché
 UserSchema.methods.comparePassword = function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };

@@ -4,15 +4,17 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-// Inscription
+// Endpoint d'inscription (Register)
 router.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
+
     // Vérifier si l'utilisateur existe déjà
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
       return res.status(400).json({ message: "Utilisateur déjà existant" });
     }
+
     const user = new User({ username, email, password });
     await user.save();
 
@@ -30,10 +32,11 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Connexion
+// Endpoint de connexion (Login)
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+
     // Trouver l'utilisateur par email
     const user = await User.findOne({ email });
     if (!user) {
@@ -46,7 +49,7 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Identifiants invalides" });
     }
 
-    // Générer le token
+    // Générer un token JWT
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });

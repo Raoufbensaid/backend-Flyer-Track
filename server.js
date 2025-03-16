@@ -1,6 +1,8 @@
-require("dotenv").config();
+// server.js
+require("dotenv").config(); // Charge les variables du fichier .env
 const express = require("express");
 const mongoose = require("mongoose");
+const authRoutes = require("./routes/auth"); // On suppose que tes routes d'authentification sont dans routes/auth.js
 
 const app = express();
 
@@ -18,9 +20,9 @@ mongoose
   .then(() => console.log("MongoDB connecté"))
   .catch((err) => console.error("Erreur MongoDB:", err));
 
-// Définir tes routes, par exemple :
-app.use("/api/auth", require("./routes/auth"));
+// Routes d'authentification
+app.use("/api/auth", authRoutes);
 
-// Démarrer le serveur
+// Démarrage du serveur
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Serveur démarré sur le port ${PORT}`));
