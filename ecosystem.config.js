@@ -8,7 +8,7 @@ module.exports = {
         NODE_ENV: "production",
         PORT: "5000",
         MONGO_URI:
-          "mongodb+srv://<user>:<password>@cluster.mongodb.net/nomBase?retryWrites=true&w=majority",
+          "mongodb+srv://bensaidraouf00:BiY9dNx05FfhDQNi@clustertrack.pcmlo.mongodb.net/",
         JWT_SECRET: "tonsecretfortjwt",
       },
     },
