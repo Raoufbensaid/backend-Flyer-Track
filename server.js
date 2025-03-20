@@ -8,7 +8,11 @@ const authRoutes = require("./routes/auth");
 const app = express();
 
 // Liste des origines autorisées (ajuste selon tes besoins)
-const allowedOrigins = ["http://localhost:3000", "https://flyertrack.fr"];
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://192.168.1.182:3000",
+  "https://flyertrack.fr",
+];
 app.use(
   cors({
     origin: function (origin, callback) {
