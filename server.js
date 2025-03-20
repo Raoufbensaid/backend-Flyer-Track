@@ -7,22 +7,21 @@ const authRoutes = require("./routes/auth");
 
 const app = express();
 
-// Configuration CORS pour autoriser plusieurs origines
+// Liste des origines autorisées (ajuste selon tes besoins en production)
 const allowedOrigins = [
   "http://localhost:3000",
   "http://192.168.1.182:3000",
   "https://flyertrack.fr",
 ];
+
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Autoriser les requêtes sans origine (ex. Postman)
+      // Autorise les requêtes sans origine (ex: Postman)
       if (!origin) return callback(null, true);
       if (allowedOrigins.indexOf(origin) === -1) {
-        return callback(
-          new Error(`Origin ${origin} not allowed by CORS`),
-          false
-        );
+        const msg = `L'origine ${origin} n'est pas autorisée par CORS.`;
+        return callback(new Error(msg), false);
       }
       return callback(null, true);
     },
@@ -32,12 +31,12 @@ app.use(
 // Middleware pour parser le JSON
 app.use(express.json());
 
-// Connexion à MongoDB avec un délai d'attente étendu (30 secondes)
+// Connexion à MongoDB avec un timeout étendu (30 secondes)
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 30000, // 30 secondes
+    serverSelectionTimeoutMS: 30000,
   })
   .then(() => console.log("MongoDB connecté"))
   .catch((err) => console.error("Erreur de connexion MongoDB:", err));
