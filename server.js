@@ -1,23 +1,24 @@
+// server.js
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const authRoutes = require("./routes/auth");
 
 const app = express();
 
-// Configuration de CORS pour autoriser les requêtes depuis http://localhost:3000 et http://192.168.1.182:3000
+// Configuration CORS pour autoriser plusieurs origines
 const allowedOrigins = ["http://localhost:3000", "http://192.168.1.182:3000"];
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Autorise les requêtes sans origine (ex. Postman)
+      // Autoriser les requêtes sans origine (ex. Postman)
       if (!origin) return callback(null, true);
       if (allowedOrigins.indexOf(origin) === -1) {
-        const msg =
-          "L'origine de la requête (" +
-          origin +
-          ") n'est pas autorisée par CORS.";
-        return callback(new Error(msg), false);
+        return callback(
+          new Error(`Origin ${origin} not allowed by CORS`),
+          false
+        );
       }
       return callback(null, true);
     },
@@ -27,17 +28,17 @@ app.use(
 // Middleware pour parser le JSON
 app.use(express.json());
 
-// Connexion à MongoDB
+// Connexion à MongoDB avec un délai d'attente étendu (30 secondes)
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 30000, // 30 secondes
   })
   .then(() => console.log("MongoDB connecté"))
   .catch((err) => console.error("Erreur de connexion MongoDB:", err));
 
-// Exemple de route d'authentification
-const authRoutes = require("./routes/auth");
+// Montage des routes d'authentification
 app.use("/api/auth", authRoutes);
 
 const PORT = process.env.PORT || 5000;
