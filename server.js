@@ -7,17 +7,12 @@ const authRoutes = require("./routes/auth");
 
 const app = express();
 
-// Liste des origines autorisées (ajuste selon tes besoins en production)
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://192.168.1.182:3000",
-  "https://flyertrack.fr",
-];
-
+// Liste des origines autorisées (ajuste selon tes besoins)
+const allowedOrigins = ["http://localhost:3000", "https://flyertrack.fr"];
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Autorise les requêtes sans origine (ex: Postman)
+      // Autoriser les requêtes sans origine (ex. Postman)
       if (!origin) return callback(null, true);
       if (allowedOrigins.indexOf(origin) === -1) {
         const msg = `L'origine ${origin} n'est pas autorisée par CORS.`;

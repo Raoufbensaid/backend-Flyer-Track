@@ -15,7 +15,7 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "Utilisateur déjà existant" });
     }
     // Créer et sauvegarder l'utilisateur
-    // On autorise le champ "role" dans le corps, mais en production, ce champ devrait être contrôlé par l'administrateur
+    // Si role n'est pas fourni, il sera "user" par défaut
     const user = new User({ username, email, password, role: role || "user" });
     await user.save();
     return res.status(201).json({ message: "Inscription réussie", user });
@@ -31,7 +31,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    // Optionnel : vérifie si la requête souhaite une connexion admin via le query param "role"
+    // Vérifier si la requête est pour un login admin (si query param role=admin est présent)
     const isAdminLogin = req.query.role === "admin";
 
     // Chercher l'utilisateur par email
@@ -39,18 +39,24 @@ router.post("/login", async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "Identifiants invalides" });
     }
-
-    // Si c'est une connexion admin, vérifier le rôle
-    if (isAdminLogin && user.role !== "admin") {
-      return res
-        .status(403)
-        .json({ message: "Accès refusé : vous n'êtes pas administrateur" });
-    }
-
     // Vérifier le mot de passe
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Identifiants invalides" });
+    }
+
+    // Si la requête ne spécifie pas "role" (login mobile), on vérifie que l'utilisateur a le rôle "user"
+    if (!req.query.role && user.role !== "user") {
+      return res.status(403).json({
+        message:
+          "Accès refusé : l'admin ne peut pas se connecter via l'application mobile",
+      });
+    }
+    // Si la requête demande une connexion admin, on vérifie que l'utilisateur est bien admin
+    if (isAdminLogin && user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ message: "Accès refusé : vous n'êtes pas administrateur" });
     }
 
     // Générer un token JWT
